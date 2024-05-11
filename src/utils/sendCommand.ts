@@ -12,7 +12,6 @@ export async function sendCommandAndGetResult(
       return;
     }
 
-    // Envia o comando para o cliente via socket
     client.socket.write(command);
 
     // Espera pela resposta do cliente

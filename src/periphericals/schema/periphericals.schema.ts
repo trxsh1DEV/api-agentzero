@@ -3,28 +3,16 @@ import { Document, Types } from 'mongoose';
 
 export type PeriphericalDocument = Peripherical & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Peripherical {
-  @Prop()
-  keyboard: string;
-
-  @Prop()
-  mouse: string;
-
-  @Prop()
-  monitors: string[];
-
-  @Prop()
-  status: string;
+  @Prop({ default: 'Normal' })
+  status: 'Normal' | 'Critico';
 
   @Prop()
   host: string;
 
   @Prop()
   class: string;
-
-  @Prop()
-  type: string;
 
   @Prop()
   local: string;

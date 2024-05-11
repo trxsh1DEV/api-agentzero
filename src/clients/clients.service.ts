@@ -3,6 +3,7 @@ import { Clients } from './schema/clients.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { clients } from 'src/socket';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class ClientsService {
@@ -21,7 +22,7 @@ export class ClientsService {
   async getClient(uid: string): Promise<Clients> {
     return this.clientModel.findOne({ uid });
   }
-  async update(uid: string, dataUpdate: any): Promise<Clients> {
+  async update(uid: UUID, dataUpdate: any): Promise<Clients> {
     return await this.clientModel.findOneAndUpdate({ uid }, dataUpdate, {
       new: true,
     });

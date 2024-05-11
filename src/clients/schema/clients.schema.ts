@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { UUID } from 'crypto';
+import { Document } from 'mongoose';
 
 export type ClientsDocument = Clients & Document;
 
@@ -36,11 +37,33 @@ export class Custom {
   @Prop({ type: Number })
   purchase_price: number;
 
-  @Prop({
-    type: [String],
-    default: [],
-  })
   local: string[];
+}
+@Schema({ _id: false })
+export class Periphericals {
+  @Prop({ type: Object })
+  keyboard: {
+    name: string;
+    description: string;
+    device_id: string;
+  };
+
+  @Prop({ type: Object })
+  mouse: {
+    name: string;
+    description: string;
+    device_id: string;
+  };
+  //
+  @Prop()
+  monitors: [
+    {
+      edid: string;
+      resolution: string;
+      gpu: string;
+      gpu_id: string;
+    },
+  ];
 }
 
 interface Inventory {
@@ -77,9 +100,9 @@ interface Inventory {
     percentage: number;
   };
   network: {
-    network_logged: string;
+    network: string;
     ipv4: string;
-    mac_address: string;
+    mac: string;
   };
   software: string[];
 }
@@ -90,10 +113,10 @@ export class Clients {
   hwid: string;
 
   @Prop({ required: true, unique: true })
-  uid: Types.UUID;
+  uid: UUID;
 
-  @Prop({ required: true })
-  peripherical_ref: Types.ObjectId;
+  // @Prop({ required: true })
+  // peripherical_ref: Types.ObjectId;
 
   @Prop({ required: true, default: true })
   online: boolean;
@@ -103,6 +126,9 @@ export class Clients {
 
   @Prop({ type: Custom })
   custom: Custom;
+
+  @Prop({ type: Periphericals })
+  periphericals: Periphericals;
 }
 //
 export const ClientsSchema = SchemaFactory.createForClass(Clients);

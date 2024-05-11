@@ -3,7 +3,7 @@ import { isValidJSON, socketData } from './utils/socket';
 import { ClientsService } from './clients/clients.service';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PeriphericalService } from './periphericals/periphericals.service';
+import { UUID } from 'crypto';
 
 interface Client {
   uid: string;
@@ -13,12 +13,12 @@ interface Client {
 export const clients: Record<string, Client> = {};
 
 export const socketServer = new NetSocket(async (socket: Socket) => {
-  const clientUid: string = '';
+  let clientUid: UUID;
   console.log('Socket server started on port', 8080);
 
   const app = await NestFactory.createApplicationContext(AppModule); // Crie uma instância do aplicativo para obter o serviço
   const clientsService = app.get(ClientsService);
-  const periphericalService = app.get(PeriphericalService);
+  // const periphericalService = app.get(PeriphericalService);
 
   socket.on('data', async (dataRaw: any) => {
     const dataStr = dataRaw.toString();
@@ -33,27 +33,18 @@ export const socketServer = new NetSocket(async (socket: Socket) => {
         return;
       }
 
-      const clientUid = validatedData.uid || '';
+      clientUid = validatedData.uid;
       clients[clientUid] = { uid: clientUid, socket: socket };
-
       const existingAgent = await clientsService.getClient(clientUid);
-      const { periphericals, ...others } = validatedData;
-      periphericals.host_ref = clientUid;
 
-      if (existingAgent && existingAgent.peripherical_ref) {
-        await Promise.all([
-          clientsService.update(clientUid, { ...others, online: true }),
-          periphericalService.update(clientUid, periphericals),
-        ]);
+      if (existingAgent) {
+        await clientsService.update(existingAgent.uid, {
+          ...validatedData,
+          online: true,
+        });
         return;
       }
-
-      const newPeripherical =
-        await periphericalService.postPeripherical(periphericals);
-
-      // @ts-ignore
-      others.peripherical_ref = newPeripherical._id;
-      await clientsService.postClient(others);
+      await clientsService.postClient(validatedData);
       return;
     } catch (err: any) {
       console.log('err', err.message);

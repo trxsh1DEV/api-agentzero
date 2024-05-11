@@ -17,6 +17,7 @@ import {
   sendCommandAndGetResult,
   sendFileAndGetResult,
 } from 'src/utils/sendCommand';
+import { UUID } from 'crypto';
 // import * as fs from 'fs';
 
 @Controller('clients') // <-- Aqui você define o prefixo para os endpoints deste controller
@@ -28,17 +29,22 @@ export class ClientsController {
     return this.clientsService.getClients();
   }
 
+  @Post()
+  postClient(@Body() data: any): any {
+    return this.clientsService.postClient(data);
+  }
+
   @Get(':id')
   getClient(@Param('id') id: string): Promise<Clients> {
     return this.clientsService.getClient(id);
   }
-
+  //
   @Delete(':id')
   deleteClient(@Param('id') id: string): Promise<Clients> {
     return this.clientsService.deleteClient(id);
   }
   @Patch(':id')
-  patchClient(@Param('id') id: string, data: Clients): Promise<Clients> {
+  patchClient(@Param('id') id: UUID, data: Clients): Promise<Clients> {
     return this.clientsService.update(id, data);
   }
   @Post('send-command') // Definindo o método POST

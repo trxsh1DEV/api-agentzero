@@ -1,7 +1,7 @@
 export function socketData(dataJson: any) {
   try {
     if (dataJson.hasOwnProperty('uid') && dataJson.hasOwnProperty('hwid')) {
-      // console.log(dataJson);
+      console.log(dataJson);
       return dataJson;
     } else {
       console.log('Dados recebidos não contêm HWID ou uid.');
