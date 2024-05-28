@@ -47,8 +47,11 @@ export class Peripherical {
   @Prop()
   purchase_price: number;
 
-  @Prop()
+  @Prop({ unique: true, required: true }) // Correção aqui
   host_ref: Types.UUID;
 }
 
 export const PeriphericalSchema = SchemaFactory.createForClass(Peripherical);
+
+// Adicionar índice único explicitamente (opcional, mas recomendado)
+PeriphericalSchema.index({ host_ref: 1 }, { unique: true });
